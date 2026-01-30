@@ -317,56 +317,66 @@
             }
         }
 
-        function getSeasonStart(hemisphere, season) {
+        function getSeasonStart(hemisphere, season, currentDate) {
+            const year = currentDate.getFullYear();
             if (hemisphere === 'northern') {
                 const starts = {
-                    'Spring': new Date(new Date().getFullYear(), 2, 20),
-                    'Summer': new Date(new Date().getFullYear(), 5, 21),
-                    'Autumn': new Date(new Date().getFullYear(), 8, 23),
-                    'Winter': new Date(new Date().getFullYear(), 11, 21)
+                    'Spring': new Date(year, 2, 20),
+                    'Summer': new Date(year, 5, 21),
+                    'Autumn': new Date(year, 8, 23),
+                    'Winter': new Date(year, 11, 21)
                 };
-                return starts[season];
+                const start = starts[season];
+                if (start > currentDate) start.setFullYear(year - 1);
+                return start;
             } else {
                 const starts = {
-                    'Spring': new Date(new Date().getFullYear(), 8, 23),
-                    'Summer': new Date(new Date().getFullYear(), 11, 21),
-                    'Autumn': new Date(new Date().getFullYear(), 2, 20),
-                    'Winter': new Date(new Date().getFullYear(), 5, 21)
+                    'Spring': new Date(year, 8, 23),
+                    'Summer': new Date(year, 11, 21),
+                    'Autumn': new Date(year, 2, 20),
+                    'Winter': new Date(year, 5, 21)
                 };
-                return starts[season];
+                const start = starts[season];
+                if (start > currentDate) start.setFullYear(year - 1);
+                return start;
             }
         }
 
-        function getSeasonEnd(hemisphere, season) {
+        function getSeasonEnd(hemisphere, season, currentDate) {
+            const year = currentDate.getFullYear();
             if (hemisphere === 'northern') {
                 const ends = {
-                    'Spring': new Date(new Date().getFullYear(), 5, 20),
-                    'Summer': new Date(new Date().getFullYear(), 8, 22),
-                    'Autumn': new Date(new Date().getFullYear(), 11, 20),
-                    'Winter': new Date(new Date().getFullYear() + 1, 2, 19)
+                    'Spring': new Date(year, 5, 20),
+                    'Summer': new Date(year, 8, 22),
+                    'Autumn': new Date(year, 11, 20),
+                    'Winter': new Date(year, 2, 19)
                 };
-                return ends[season];
+                const end = ends[season];
+                if (end <= currentDate) end.setFullYear(year + 1);
+                return end;
             } else {
                 const ends = {
-                    'Spring': new Date(new Date().getFullYear(), 11, 20),
-                    'Summer': new Date(new Date().getFullYear() + 1, 2, 19),
-                    'Autumn': new Date(new Date().getFullYear(), 5, 20),
-                    'Winter': new Date(new Date().getFullYear(), 8, 22)
+                    'Spring': new Date(year, 11, 20),
+                    'Summer': new Date(year, 2, 19),
+                    'Autumn': new Date(year, 5, 20),
+                    'Winter': new Date(year, 8, 22)
                 };
-                return ends[season];
+                const end = ends[season];
+                if (end <= currentDate) end.setFullYear(year + 1);
+                return end;
             }
         }
 
-        function getDaysInSeason(hemisphere, season) {
-            const start = getSeasonStart(hemisphere, season);
-            const end = getSeasonEnd(hemisphere, season);
+        function getDaysInSeason(hemisphere, season, currentDate) {
+            const start = getSeasonStart(hemisphere, season, currentDate);
+            const end = getSeasonEnd(hemisphere, season, currentDate);
             const diffTime = end - start;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             return diffDays;
         }
 
         function getDayOfSeason(hemisphere, season, currentDate) {
-            const start = getSeasonStart(hemisphere, season);
+            const start = getSeasonStart(hemisphere, season, currentDate);
             const diffTime = currentDate - start;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             return diffDays;
@@ -406,7 +416,7 @@
             const hemisphere = getHemisphere();
             const season = getSeason(hemisphere, now);
             const dayOfSeason = getDayOfSeason(hemisphere, season, now);
-            const daysInSeason = getDaysInSeason(hemisphere, season);
+            const daysInSeason = getDaysInSeason(hemisphere, season, now);
             const progress = (dayOfSeason / daysInSeason) * 100;
 
             document.getElementById('hemisphere').textContent = hemisphere === 'northern' ? 'Northern Hemisphere' : 'Southern Hemisphere';
