@@ -1,26 +1,31 @@
 export function getHemisphere() {
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const lat = parseFloat(timezone.split('/')[1]?.replace(/_/g, ' ')) || 0;
+    // Offset comparison trick: January offset is greater than July offset in Northern Hemisphere
+    const jan = new Date(new Date().getFullYear(), 0, 1).getTimezoneOffset();
+    const jul = new Date(new Date().getFullYear(), 6, 1).getTimezoneOffset();
     
-    if (timezone.toLowerCase().includes('australia') ||
-        timezone.toLowerCase().includes('new zealand') ||
-        timezone.toLowerCase().includes('south africa') ||
-        timezone.toLowerCase().includes('argentina') ||
-        timezone.toLowerCase().includes('chile') ||
-        timezone.toLowerCase().includes('brazil') ||
-        timezone.toLowerCase().includes('antarctica')) {
+    if (jan > jul) return 'northern';
+    if (jan < jul) return 'southern';
+    
+    // Fallback for regions without DST: check timezone name
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone.toLowerCase();
+    const southernRegions = [
+        'australia', 'sydney', 'melbourne', 'brisbane', 'perth', 'adelaide', 'hobart', 'darwin',
+        'auckland', 'wellington', 'christchurch',
+        'johannesburg', 'cape_town', 'durban', 'pretoria',
+        'buenos_aires', 'santiago', 'sao_paulo', 'rio_de_janeiro', 'montevideo', 'asuncion', 'lima',
+        'antarctica', 'pacific/auckland', 'pacific/fiji', 'pacific/port_moresby'
+    ];
+    
+    if (southernRegions.some(region => timezone.includes(region))) {
         return 'southern';
     }
-    
+
+    // Secondary fallback: locale region
     const region = new Intl.Locale(navigator.language).region;
-    const southernCountries = ['AU', 'NZ', 'ZA', 'AR', 'CL', 'BR', 'ZA', 'AU', 'PG', 'FJ', 'SB'];
-    
+    const southernCountries = ['AU', 'NZ', 'ZA', 'AR', 'CL', 'BR', 'PY', 'UY', 'PE', 'FJ', 'PG', 'SB', 'AQ'];
     if (region && southernCountries.includes(region)) {
         return 'southern';
     }
-    
-    const latitude = getLatitude();
-    if (latitude < 0) return 'southern';
     
     return 'northern';
 }
@@ -200,6 +205,7 @@ export function updateDisplay() {
     document.getElementById('hemisphere').textContent = hemisphere === 'northern' ? 'Northern Hemisphere' : 'Southern Hemisphere';
     document.getElementById('season').textContent = season;
     document.getElementById('dayNumber').textContent = dayOfSeason;
+    document.getElementById('dayLabel').textContent = `of ${season}`;
     document.getElementById('seasonIcon').textContent = getSeasonIcon(season);
     document.getElementById('dateInfo').textContent = formatCurrentDate(now);
     document.getElementById('progressFill').style.width = `${progress}%`;
