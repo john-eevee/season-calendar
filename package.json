@@ -1,0 +1,24 @@
+{
+  "name": "season-calendar",
+  "version": "1.0.0",
+  "description": "A beautiful single-page app that displays the current date as \"days of the season\" (e.g., \"37th of Summer\"), automatically detecting your hemisphere based on locale.",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/john-eevee/season-calendar.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/john-eevee/season-calendar/issues"
+  },
+  "homepage": "https://github.com/john-eevee/season-calendar#readme",
+  "devDependencies": {
+    "vitest": "^4.0.18"
+  }
+}
